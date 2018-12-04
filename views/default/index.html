@@ -1,0 +1,74 @@
+{{extend 'layout.html'}}
+{{block header}}
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+<script>
+    var getHaircutsUrl = "{{=URL('api', 'get_all_haircuts')}}";
+    var getAppointmentsUrl = "{{=URL('api', 'get_appointments')}}";
+    var moveBarbersUrl = "{{=URL('api', 'move_barbers')}}";
+    var getBarbersUrl = "{{=URL('api', 'get_barbers')}}"
+</script>
+{{end}}
+
+<div id="app">
+    <div v-if="home_page">
+        <div class="container padded center">
+            <h1>Welcome to J&R Barber Shop</h1>
+            <img src="{{=URL('static', '138.jpg')}}" style="width: 500px; height: 500px"/>
+            <br>
+            <button>Haircuts</button> <button v-on:click="redirect_barber_page()">Barbers</button> <button v-on:click="redirect_appointment_page()">Appointments</button>
+        </div>
+
+    </div>
+    <div v-if="barber_page">
+        <div class="container padded center">
+            <h1>Our Barbers</h1>
+            <div class="quarter">
+                <img src="{{=URL('static', 'image.jpeg')}}" style="width: 100px; height: 100px"/>
+                <p>hello</p>
+            </div>
+            <div class="quarter">
+                <img src="{{=URL('static', 'image.jpeg')}}" style="width: 100px; height: 100px"/>
+                <p>hi</p>
+            </div>
+            <button v-on:click="redirect_home_page()">Home</button> <button>Haircuts</button> <button>Appointments</button>
+        </div>
+    </div>
+    <div v-if="haircut_page">
+        <img src="{{=URL('static', 'haircut_pictures/haircut1.png')}}" />
+    </div>
+
+    <div v-if="appointment_page">
+        <input type="date" v-model="selected_date">
+
+        <select v-model="selected_barber">
+            <option disabled value="">Select a barber</option>
+            {{barbers = db().select(db.auth_user.ALL)}}
+            {{for b in barbers:}}
+                {{if b.Barber == True:}}
+                    <option v-on:click="test_print()">{{=b.id}}</option>
+                {{pass}}
+            {{pass}}
+        </select>
+
+        
+
+
+        <button v-on:click="get_appointments()">save</button>
+    </div>
+
+
+    <script src="{{=URL('static', 'js/default_index.js')}}"></script>
+</div>
+
+<!--
+    Dropdown menus
+    <select>
+        <option>First option</option>
+    </select>
+
+
+    <select>
+        <option v-for="time in vueObject>time.timeslot></option>
+    </select>
+
+-->
