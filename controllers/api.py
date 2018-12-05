@@ -1,36 +1,14 @@
-# condition 1
-#appts = db((db.appointments.barber == requests.vars.barber) &
-
-#condition 2
-    #(db.appointments.day >= datetime.today)).select()
-
-#times = db(db.time_slots.=).select()
-
-# for time in times:
-#   if time in appointments:
-#       ignore
-#   else:
-#       send it
-import datetime
-
-# def move_barbers():
-#     print("in api.py")
-#     users = db().select(db.auth_user.ALL)
-#     barbers_entered = db().select(db.barbers.barber_name)
-#     for user in users:
-#         print("LOOPITY LOOP") # this loop isn't working properly
-#         if user.Barber == True:
-#             if user.email not in barbers_entered:
-#                 new_barber_id = db.barbers.insert(
-#                     barber_name = user.email
-#                 )
-#             else:
-#                 continue
-#     return response.json(dict(new_barber_id = new_barber_id))
-
 def get_barbers():
     barbers = db(db.auth_user.Barber == True).select()
     return response.json(dict(barbers=barbers))
+
+def make_appointment():
+
+    appt_date = request.vars.app_date
+    appt_barber = request.vars.appt_barber
+    appt_time = request.vars.appt_date
+
+
 
 def get_appointments():
     results = []
@@ -45,9 +23,6 @@ def get_appointments():
     print request.vars.barber_id
     print type(request.vars.barber_id)
     print "################"
-    barber_id = 69
-    for each in db(db.auth_user).select():
-        pass
 
     print "from request.vars.appointment_date"
     print(date_string)
@@ -78,14 +53,13 @@ def get_appointments():
     for time in times:
         if time_is_available(appts, time):
             results.append(time)
-            print time
     return response.json(dict(time=results))
 
 
 def time_is_available(appts, time):
     for appt in appts:
-        print(type(appt.timeslot_id))
-        print(type(time.id))
+        # print(type(appt.timeslot_id))
+        # print(type(time.id))
         if time.id == appt.timeslot_id:
             return False
     return True

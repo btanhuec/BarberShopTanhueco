@@ -14,6 +14,3 @@ db.define_table('appointments',
                 Field('timeslot_id', 'reference timeslots'),
                 Field('user_id', 'reference auth_user')
                 )
-
-
-# need barber, time_slots, users, and appt table

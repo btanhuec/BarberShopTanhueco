@@ -61,7 +61,8 @@ var get_appointments = function() {
     // var appointment_date = self.vue.selected_date
     // {} creates a request body and that is sent to api.py
     $.post(getAppointmentsUrl, {barber_id: barber_id, appointment_date: appointment_date}, function (response) {
-        console.log(response)
+        console.log(response);
+        app.valid_times = response.time
     });
     console.log("in get_appointments");
 };
@@ -73,6 +74,13 @@ var get_barbers = function() {
 };
 var test_print = function() {
     console.log("testing!")
+};
+
+var make_appointment = function() {
+    var appt_date = app.selected_date;
+    var appt_barber = app.selected_barber;
+    var appt_time = app.selected_time;
+
 };
 
     // Your code goes here. Remember, we need to set the id of the new comment!
@@ -89,7 +97,8 @@ var app = new Vue({
         appointment_page: false,
         selected_date: undefined,
         selected_barber: undefined,
-        selected_time: undefined
+        selected_time: undefined,
+        valid_times: []
     },
     methods: {
         redirect_home_page: self.redirect_home_page,
