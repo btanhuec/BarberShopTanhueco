@@ -25,12 +25,18 @@
         <div class="container padded center">
             <h1>Our Barbers</h1>
             <div class="quarter">
-                <img src="{{=URL('static', 'image.jpeg')}}" style="width: 100px; height: 100px"/>
-                <p>hello</p>
-            </div>
-            <div class="quarter">
-                <img src="{{=URL('static', 'image.jpeg')}}" style="width: 100px; height: 100px"/>
-                <p>hi</p>
+              {{barbers = db().select(db.auth_user.ALL)}}
+              {{for b in barbers:}}
+                  {{if b.Barber == True:}}
+                      <div>
+                      <div><img src="{{=URL('static', 'image.jpeg')}}" style="width: 100px; height: 100px"/></div>
+                      {{=b.first_name}}
+                      {{=b.last_name}}
+                      </div>
+                      <p></p>
+                      {{pass}}
+                  {{pass}}
+              {{pass}}
             </div>
             <button v-on:click="redirect_home_page()">Home</button>
             <button>Haircuts</button>
