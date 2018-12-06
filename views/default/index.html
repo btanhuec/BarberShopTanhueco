@@ -5,9 +5,20 @@
     var getHaircutsUrl = "{{=URL('api', 'get_all_haircuts')}}";
     var getAppointmentsUrl = "{{=URL('api', 'get_appointments')}}";
     var moveBarbersUrl = "{{=URL('api', 'move_barbers')}}";
-    var getBarbersUrl = "{{=URL('api', 'get_barbers')}}"
+    var getBarbersUrl = "{{=URL('api', 'get_barbers')}}";
+    var makeAppointmentUrl = "{{=URL('api', 'make_appointment_api')}}";
+    var getCurrentUserUrl = "{{=URL('api', 'get_current_user')}}";
+
+
+    var is_logged_in = "{{='false' if auth.user is None else 'true'}}";
+    var user_email = "{{='' if auth.user is None else auth.user.email}}";
+    var is_barber = "{{='' if auth.user not in db(db.auth_user.Barber == True).select() else 'False'}}";
+
+
+    var testing = "{{=URL('api', 'testing_api')}}"
 </script>
 {{end}}
+
 
 <div id="app">
     <div v-if="home_page">
@@ -15,7 +26,10 @@
             <h1>Welcome to J&R Barber Shop</h1>
             <img src="{{=URL('static', '138.jpg')}}" style="width: 500px; height: 500px"/>
             <br>
-            <button>Haircuts</button> <button v-on:click="redirect_barber_page()">Barbers</button> <button v-on:click="redirect_appointment_page()">Appointments</button>
+            <button>Haircuts</button>
+            <button v-on:click="redirect_barber_page()">Barbers</button>
+            <button v-on:click="redirect_appointment_page()">Appointments</button>
+            <button v-on:click="get_current_user()">Current User FOR TESTING</button>
         </div>
 
     </div>
@@ -30,30 +44,79 @@
                 <img src="{{=URL('static', 'image.jpeg')}}" style="width: 100px; height: 100px"/>
                 <p>hi</p>
             </div>
-            <button v-on:click="redirect_home_page()">Home</button> <button>Haircuts</button> <button>Appointments</button>
+            <button v-on:click="redirect_home_page()">Home</button>
+            <button>Haircuts</button>
+            <button>Appointments</button>
         </div>
     </div>
     <div v-if="haircut_page">
-        <img src="{{=URL('static', 'haircut_pictures/haircut1.png')}}" />
+        <img src="{{=URL('static', 'haircut_pictures/haircut1.png')}}"/>
     </div>
+
 
     <div v-if="appointment_page">
         <input type="date" v-model="selected_date">
 
         <select v-model="selected_barber">
             <option disabled value="">Select a barber</option>
-            {{barbers = db().select(db.auth_user.ALL)}}
-            {{for b in barbers:}}
-                {{if b.Barber == True:}}
-                    <option v-on:click="test_print()">{{=b.id}}</option>
-                {{pass}}
-            {{pass}}
+        {{barbers = db().select(db.auth_user.ALL)}}
+        {{for b in barbers:}}
+        {{if b.Barber == True:}}
+            <option v-on:click="get_appointments()" value="{{=b.id}}">{{=b.first_name + " " + b.last_name}}</option>
+        {{pass}}
+        {{pass}}
         </select>
 
-        
+        <select v-model="selected_time">
+            <option disabled value="">Select a time</option>
+            <option v-for="time in valid_times" value="${time.id}">${time.timeslot}</option>
+        </select>
 
+        <p v-for="time in valid_times">${time}</p>
 
-        <button v-on:click="get_appointments()">save</button>
+        <button v-on:click="get_current_user()">Get current user (PLACEHOLDER)</button>
+
+        <button v-on:click="get_appointments()">Call get_appointments()</button>
+
+        <button v-on:click="make_appointment()">Create Appointment</button>
+        <button v-on:click="test_print()">test</button>
+        <button v-on:click="display_appt_table()">Show Appts</button>
+
+        <!-- <div v-if="show_appt_table == True"> -->
+
+            <div v-for="each in barbers_list" v-if="each.email == selected_user.email">
+                <div class="table-title">
+                    <h3>Appointments</h3>
+                </div>
+                <table class="table-fill">
+                    <thead>
+                    <tr>
+                        <th class="text-left">Time</th>
+                        <th class="text-left">Customer</th>
+                    </tr>
+                    </thead>
+
+                    <tbody class="table-hover">
+                    <tr>
+                        {{appointments = db((db.auth_user.id == db.appointments.user_id) & (auth.user_id == db.appointments.barber_id)).select()}}
+
+                        {{print type(appointments)}}
+
+                        {{for appt in appointments:}}
+                            {{print appt}}
+                            {{print 'hello'}}
+                            {{customer = db(db.auth_user.id == appt.auth_user.id).select().first()}}
+                            {{print 'hi'}}
+                            {{time = db(db.timeslots.id == appt.appointments.timeslot_id).select().first()}}
+                            <td class="text-left">{{=time.timeslot}}</td>
+                            <td class="text-left">{{=customer.first_name + " " + customer.last_name}}</td>
+                        {{pass}}
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        <!-- </div> -->
+
     </div>
 
 
