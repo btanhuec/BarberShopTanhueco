@@ -14,3 +14,8 @@ db.define_table('appointments',
                 Field('timeslot_id', 'reference timeslots'),
                 Field('user_id', 'reference auth_user')
                 )
+
+db.define_table('barber_bio',
+                Field('barber_id','reference auth_user'),
+                Field('body', 'text')
+                )

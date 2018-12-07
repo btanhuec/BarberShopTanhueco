@@ -2,13 +2,25 @@ def get_barbers():
     barbers = db(db.auth_user.Barber == True).select()
     return response.json(dict(barbers=barbers))
 
-def make_appointment():
+@auth.requires_signature()
+def make_appointment_api():
+    print "hello"
+    print request.vars.user_id
 
-    appt_date = request.vars.app_date
-    appt_barber = request.vars.appt_barber
-    appt_time = request.vars.appt_date
+    db.appointments.insert(barber_id=request.vars.barber_id, appointment_date=request.vars.appointment_date, timeslot_id=request.vars.timeslot_id, user_id=request.vars.user_id)
 
 
+    print request.vars.appointment_date
+
+    return "from make_appointment()"
+
+@auth.requires_signature()
+def testing_api():
+    print "fuck"
+    return "fuckkkk"
+
+def get_current_user():
+    return response.json(dict(user=auth.user if auth.user is not None else None))
 
 def get_appointments():
     results = []
@@ -18,42 +30,53 @@ def get_appointments():
     #print(type(db.appointments.appointment_date))
     date_string = request.vars.appointment_date
 
-    print "################"
-    print "from request.vars.barber_id"
-    print request.vars.barber_id
-    print type(request.vars.barber_id)
-    print "################"
-
-    print "from request.vars.appointment_date"
-    print(date_string)
-    print type(date_string)
-    print "#################"
+    # print "################"
+    # print "from request.vars.barber_id"
+    # print request.vars.barber_id
+    # print type(request.vars.barber_id)
+    # print "################"
+    #
+    # print "from request.vars.appointment_date"
+    # print(date_string)
+    # print type(date_string)
+    # print "#################"
 
     #new_date = datetime.datetime.strptime(date_string, '%Y-%m-%d').date()
 
     # print(new_date)
     # print(type(new_date))
 
-    appointment_temp = db(db.appointments).select().first()
-    appointment = appointment_temp.appointment_date.date().strftime('%Y-%m-%d')
-    print "from db(db.appointments).select().first()"
-    print appointment
-    print type(appointment)
-    print "#################"
+    if db(db.appointments).select().first() != None:
+        appointment_temp = db(db.appointments).select().first()
+        appointment = appointment_temp.appointment_date.date().strftime('%Y-%m-%d')
+        # print "from db(db.appointments).select().first()"
+        # print appointment
+        # print type(appointment)
+        # print "#################"
 
 
-    #print (appointment.appointment_date == new_date)
-    print(appointment == date_string)
+        #print (appointment.appointment_date == new_date)
+        # print(appointment == date_string)
 
-    appts = db((db.appointments.barber_id == request.vars.barber_id) & (appointment == request.vars.appointment_date)).select() # choose the correct barber, and the correct date
-    print("xD")
-    # db(db.appointments.day.day == day)
-    times = db(db.timeslots).select()
+        appts = db((db.appointments.barber_id == request.vars.barber_id) & (appointment == request.vars.appointment_date)).select() # choose the correct barber, and the correct date
+        # print("xD")
+        # db(db.appointments.day.day == day)
+        times = db(db.timeslots).select()
 
-    for time in times:
-        if time_is_available(appts, time):
+        for time in times:
+            print time["appointments.timeslot"]
+            if time_is_available(appts, time):
+                results.append(time)
+        return response.json(dict(time=results))
+
+    else:
+
+        times = db(db.timeslots).select()
+
+        for time in times:
+            print time
             results.append(time)
-    return response.json(dict(time=results))
+        return response.json(dict(time=results))
 
 
 def time_is_available(appts, time):
