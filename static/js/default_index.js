@@ -89,7 +89,11 @@ var get_current_user = function(){
 
 var make_appointment = function() {
     console.log('in make_appointment()');
+<<<<<<< HEAD
     $.post(makeAppointmentUrl, {barber_id: app.selected_barber, appointment_date: app.selected_date, timeslot_id: app.selected_time, user_id: app.selected_user}, function (response) {
+=======
+    $.post(makeAppointmentUrl, {barber_id: app.selected_barber, appointment_date: app.selected_date, timeslot_id: app.selected_time, user_id: app.selected_user.id}, function (response) {
+>>>>>>> 0c73e1c130d1cb9efb0d85b5d7d7af5ea6487dbf
         console.log(response);
         console.log('made appointment')
     });

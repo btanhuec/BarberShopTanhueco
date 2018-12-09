@@ -6,7 +6,11 @@
     var getAppointmentsUrl = "{{=URL('api', 'get_appointments')}}";
     var moveBarbersUrl = "{{=URL('api', 'move_barbers')}}";
     var getBarbersUrl = "{{=URL('api', 'get_barbers')}}";
+<<<<<<< HEAD
     var makeAppointmentUrl = "{{=URL('api', 'make_appointment_api')}}";
+=======
+    var makeAppointmentUrl = "{{=URL('api', 'make_appointment_api', user_signature=True)}}";
+>>>>>>> 0c73e1c130d1cb9efb0d85b5d7d7af5ea6487dbf
     var getCurrentUserUrl = "{{=URL('api', 'get_current_user')}}";
 
 
@@ -37,6 +41,7 @@
         <div class="container padded center">
             <h1>Our Barbers</h1>
             <div class="quarter">
+<<<<<<< HEAD
                 <img src="{{=URL('static', 'image.jpeg')}}" style="width: 100px; height: 100px"/>
                 <p>hello</p>
             </div>
@@ -47,6 +52,28 @@
             <button v-on:click="redirect_home_page()">Home</button>
             <button>Haircuts</button>
             <button>Appointments</button>
+=======
+              {{barbers = db().select(db.auth_user.ALL)}}
+              {{for b in barbers:}}
+                  {{if b.Barber == True:}}
+                      <div>
+                      <div><img src="{{=URL('static', 'image.jpeg')}}" style="width: 100px; height: 100px"/></div>
+                      {{=b.first_name}}
+                      {{=b.last_name}}
+                      {{current_bio = db(db.barber_bio.barber_id == b.id).select().first()}}
+                      <div>
+                      {{if not current_bio:}}
+                        {{="No Bio"}}
+                      {{else:}}
+                        {{=current_bio.body}}
+                      {{pass}}
+                      </div>
+                      </div>
+                      <p></p>
+                      {{pass}}
+                  {{pass}}
+              {{pass}}
+>>>>>>> 0c73e1c130d1cb9efb0d85b5d7d7af5ea6487dbf
         </div>
     </div>
     <div v-if="haircut_page">
@@ -65,6 +92,7 @@
             <option v-on:click="get_appointments()" value="{{=b.id}}">{{=b.first_name + " " + b.last_name}}</option>
         {{pass}}
         {{pass}}
+<<<<<<< HEAD
         </select>
 
         <select v-model="selected_time">
@@ -74,6 +102,17 @@
 
         <p v-for="time in valid_times">${time}</p>
 
+=======
+        </select>
+
+        <select v-model="selected_time">
+            <option disabled value="">Select a time</option>
+            <option v-for="time in valid_times" v-bind:value="time.id">${time.timeslot}</option>
+        </select>
+
+        <p v-for="time in valid_times">${time}</p>
+
+>>>>>>> 0c73e1c130d1cb9efb0d85b5d7d7af5ea6487dbf
         <button v-on:click="get_current_user()">Get current user (PLACEHOLDER)</button>
 
         <button v-on:click="get_appointments()">Call get_appointments()</button>
@@ -103,6 +142,7 @@
                         {{print type(appointments)}}
 
                         {{for appt in appointments:}}
+<<<<<<< HEAD
                             {{print appt}}
                             {{print 'hello'}}
                             {{customer = db(db.auth_user.id == appt.auth_user.id).select().first()}}
@@ -110,6 +150,17 @@
                             {{time = db(db.timeslots.id == appt.appointments.timeslot_id).select().first()}}
                             <td class="text-left">{{=time.timeslot}}</td>
                             <td class="text-left">{{=customer.first_name + " " + customer.last_name}}</td>
+=======
+                            {{print 'hello'}}
+                            {{my_date = datetime.datetime.now().strftime('%Y-%m-%d 00:00:00')}}
+                            {{customer = db(db.auth_user.id == appt.auth_user.id).select().first()}}
+                            {{print 'hi'}}
+                            {{time = db(db.timeslots.id == appt.appointments.timeslot_id).select().first()}}
+                            <div>
+                            <td class="text-left">{{=time.timeslot}}</td>
+                            <td class="text-left">{{=customer.first_name + " " + customer.last_name}}</td>
+                            </div>
+>>>>>>> 0c73e1c130d1cb9efb0d85b5d7d7af5ea6487dbf
                         {{pass}}
                     </tr>
                     </tbody>
