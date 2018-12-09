@@ -18,4 +18,4 @@ db.define_table('appointments',
 db.define_table('barber_bio',
                 Field('barber_id','reference auth_user'),
                 Field('body', 'text')
-                )
+				)
