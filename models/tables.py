@@ -1,9 +1,5 @@
 import datetime
 
-db.define_table('barbers',
-                Field('barber_name')
-                )
-
 db.define_table('timeslots',
                 Field('timeslot'),
                 )
@@ -17,5 +13,5 @@ db.define_table('appointments',
 
 db.define_table('barber_bio',
                 Field('barber_id','reference auth_user'),
-                Field('body', 'text')
-				)
+                Field('body', 'text', default ='no bio'),
+                )

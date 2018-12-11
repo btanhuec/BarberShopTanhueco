@@ -1,0 +1,12 @@
+div.barber_name{
+  font-size: 20pt;
+}
+
+div.barber_email{
+  font-size:15pt;
+}
+
+#wrapper {
+  display: flex;
+  justify-content: center;
+}
