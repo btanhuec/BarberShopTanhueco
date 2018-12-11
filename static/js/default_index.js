@@ -59,19 +59,16 @@ var redirect_appointment_page = function() {
 var editBio = function(callback) {
     app.bio_editing = true;
     callback;
-    console.log('editBio');
 };
 
 var saveBio = function(callback) {
     callback;
 
-    console.log('in saveBio():' + app.c_bio);
     app.bio_editing = false;
     if(app.c_bio==None){
       editedBio = app.c_bio;
     }else{
       editedBio = app.c_bio;
-      console.log('c_bio is defined:'+ app.c_bio);
     }
  //c_bio for SURE has to be something prior
     /*edited_bio = bio of user we are editing, don't know if this is actually
@@ -80,10 +77,6 @@ var saveBio = function(callback) {
     bio is being created, it's not referencing correctly.
     */
 
-    console.log('saveBio');
-    console.log('saveBio:' + editedBio.barber_id);
-    console.log('saveBio:' + editedBio.barber_email);
-    console.log('saveBio:' + editedBio.body);
     $.post(saveCurrentBio,{
       body:editedBio.body,
     }, function(response) {
@@ -99,8 +92,7 @@ var getBio = function(callback){ //assigns the current, existing bio to getBio, 
       $.getJSON(getCurrentBio, function(response) {
         app.c_bio = response.bio;
        app.bio_created = true;
-        console.log("getBio: "+ app.c_bio);
-        console.log("getBio: " + response.bio.body);
+
       });
     }else{
       console.log("getBio: False");
@@ -108,20 +100,17 @@ var getBio = function(callback){ //assigns the current, existing bio to getBio, 
 };
 
 var toggleNewBio = function(){
-  console.log("in toggleNewBio:")
 
   app.bio_creating = true;
   app.bio_editing = true;
-  console.log("in toggleNewBio creating: " + app.bio_creating)
-  console.log("in toggleNewBio editing: " + app.bio_creating)
+
 };
 
 
 
 var createBio = function(){
   app.bio_creating = false;
-  console.log("createBio user:" + app.selected_user.email);
-  console.log("createBio Body:" + app.newBioBody);
+
   var newBio = {
     barber_id:app.selected_user.id,
     body: app.newBioBody,
@@ -132,10 +121,8 @@ var createBio = function(){
     //self.getBio(bioExists(get_current_user));
     //self.saveBio();
     newBio['idx'] = response.new_bio;
-    console.log("createBio: " + response.new_bio);
     app.barberbio_list.push(newBio);
     app.c_bio = response.bio;
-    console.log("createdBio c_bio: " + app.c_bio);
     self.processBios();
     //newBio returns the id for the post
     //link c_bio to the newly added item
@@ -157,7 +144,6 @@ var createBio = function(){
 
 var bioExists = function(callback){//determine if a bio exists for the current user, not working properly
   callback;
-  console.log("in bioExists");
   if (app.selected_user == null){
     console.log("bioExists(): " + self.selected_user); // not an issue, works fine when there is user logged in
   }else{
@@ -169,7 +155,6 @@ var bioExists = function(callback){//determine if a bio exists for the current u
 };
 
 var valBioCreated = function(){
-  console.log("in valBioCreated()");
   app.bio_created = true;
 };
 
@@ -181,9 +166,7 @@ var get_appointments = function() {
     var barber_id = app.selected_barber;
     var appointment_date = app.selected_date;
     // {} creates a request body and that is sent to api.py
-    console.log(appointment_date);
     $.post(getAppointmentsUrl, {barber_id: barber_id, appointment_date: appointment_date}, function (response) {
-        console.log(response);
         app.valid_times = response.time;
     });
     console.log("in get_appointments");
@@ -192,11 +175,9 @@ var get_appointments = function() {
 var get_barbers = function() {
       $.getJSON(getBarbersUrl, function(response) {
         app.barbers_list = response.barbers;
-        console.log(app.barbers_list);
       });
 };
 var test_print = function() {
-    console.log("testing!");
     $.post(getAppointmentsUrl, {}, function (response) {
         console.log('testing 2');
     });
@@ -213,7 +194,6 @@ var get_current_user_barber = function(){
   //   console.log("leaving get_current_user():" + app.selected_user.email);
   // }
     app.selected_user = user_prof;
-    console.log(app.selected_user)
 };
 
 var get_current_user = function(){
@@ -229,12 +209,10 @@ var get_current_user = function(){
 };
 
 var make_appointment = function() {
-    console.log('in make_appointment()');
     $.post(makeAppointmentUrl, {barber_id: app.selected_barber, appointment_date: app.selected_date, timeslot_id: app.selected_time, user_id: app.selected_user.id}, function (response) {
         console.log(response);
         console.log('made appointment')
     });
-    console.log('hello')
 };
 
     // Your code goes here. Remember, we need to set the id of the new comment!
@@ -312,7 +290,6 @@ var redirect_refresh = function () {
     app.home_page = false;
     app.barber_page = false;
     app.appointment_page = true;
-    console.log('shit');
     clear_appt_fields();
 
     hide_choosers();
