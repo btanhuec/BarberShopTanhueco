@@ -60,7 +60,7 @@ def upload_pic():
     return response.json(dict(thing=thing))
 
 def refresh():
-    print 'FUCK YOU'
+    print 'FUCK YOU WORK YOU PIECE OF SHIT'
     redirect(URL('index'))
     return 'yessir'
 

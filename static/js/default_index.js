@@ -175,18 +175,22 @@ var make_appointment = function() {
 var display_barber_chooser = function () {
     app.display_barber_chooser = true;
 };
-var display_date_chooser = function (){
+var show_date_chooser = function (){
     app.display_date_chooser = true;
 };
-var display_time_chooser = function() {
+var show_time_chooser = function() {
     app.display_time_chooser = true;
 };
-var display_create_appt_btn = function () {
+var show_create_appt_btn = function () {
     app.display_create_appt_btn = true;
 };
-var appt_success = function (){
+var appoint_success = function (){
     app.appt_success = true;
 };
+
+
+
+
 var restart_appt = function() {
     app.appt_success = false;
 };
@@ -198,6 +202,13 @@ var hide_time_chooser = function () {
 };
 var hide_create_appt_button = function () {
     app.display_create_appt_btn = false;
+};
+
+var hide_choosers = function() {
+    hide_date_chooser();
+    hide_time_chooser();
+    hide_create_appt_button();
+    restart_appt();
 };
 
 var upload_pic = function(){
@@ -235,6 +246,8 @@ var redirect_refresh = function () {
     console.log('shit');
     clear_appt_fields();
 
+    hide_choosers();
+
 };
 
 var print_shit = function() {
@@ -263,13 +276,12 @@ var app = new Vue({
         bio_exists: false,
         bio_creating: false,
         display_barber_chooser: false,
-        display_date_chooser: true,
+        display_date_chooser: false,
         display_time_chooser: false,
         display_create_appt_btn: false,
         appt_success: false,
         barber_picture: undefined,
         bio_created: false,
-        second_barber: undefined,
     },
     methods: {
         redirect_home_page: self.redirect_home_page,
@@ -288,9 +300,10 @@ var app = new Vue({
         bioExists: self.bioExists,
         onPageLoad: self.onPageLoad,
         display_barber_chooser: self.display_barber_chooser,
-        display_time_chooser: self.display_time_chooser,
-        display_create_appt_btn: self.display_create_appt_btn,
-        appt_success: self.appt_success,
+        show_date_chooser: self.show_date_chooser,
+        show_time_chooser: self.show_time_chooser,
+        show_create_appt_btn: self.show_create_appt_btn,
+        appoint_success: self.appoint_success,
         restart_appt: self.restart_appt,
         hide_date_chooser: self.hide_date_chooser,
         hide_time_chooser: self.hide_time_chooser,
@@ -303,6 +316,7 @@ var app = new Vue({
         print_shit: self.print_shit
     }
 });
+
 
 onPageLoad();
 //get_appointments();

@@ -126,7 +126,7 @@
         {{barbers = db().select(db.auth_user.ALL)}}
         {{for b in barbers:}}
         {{if b.Barber == True:}}
-            <option v-on:click="display_date_chooser()"
+            <option v-on:click="show_date_chooser()"
                     value="{{=b.id}}">{{=b.first_name + " " + b.last_name}}</option>
         {{pass}}
         {{pass}}
@@ -134,14 +134,14 @@
         <div v-if="display_date_chooser == true">
             <h2>Choose an appointment date</h2>
 
-            <input type="date" v-model="selected_date" v-on:change="get_appointments(); display_time_chooser()">
+            <input type="date" v-model="selected_date" v-on:change="get_appointments(); show_time_chooser()">
         </div>
 
         <div v-if="display_time_chooser == true">
             <h2>Select a time</h2>
             <select v-model="selected_time">
                 <option disabled value="">Select a time</option>
-                <option v-for="time in valid_times" v-bind:value="time.id" v-on:click="display_create_appt_btn()">
+                <option v-for="time in valid_times" v-bind:value="time.id" v-on:click="show_create_appt_btn()">
 
                     ${time.timeslot}
 
@@ -153,7 +153,7 @@
         -->
 
         <div v-if="display_create_appt_btn == true">
-            <button v-on:click="make_appointment(); appt_success()">Create Appointment</button>
+            <button v-on:click="make_appointment(); appoint_success()">Create Appointment</button>
         </div>
 
         <div v-if="appt_success == true">
