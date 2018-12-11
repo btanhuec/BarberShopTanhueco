@@ -64,11 +64,6 @@ def refresh():
     redirect(URL('index'))
     return 'yessir'
 
-@auth.requires_signature()
-def testing_api():
-    print "fuck"
-    return "fuckkkk"
-
 @auth.requires_signature() # this causes an issue if the user does NOT have a bio, is called when getBio is called
 def get_current_bio():
     bio = db(db.barber_bio.barber_id == auth.user_id).select().first()
@@ -86,12 +81,17 @@ def save_edit_bio():
 
 @auth.requires_signature()
 def create_bio():
-    new_user_bio = db.barber_bio.insert(
+    new_bio = db.barber_bio.insert(
         barber_id = auth.user_id,
         body = request.vars.body,
     )
     print("in create_bio (api.py)")
-    return response.json(dict(new_user_bio = new_user_bio))
+    print("in create bio", new_bio.body)
+    print("in create bio", new_bio.id)
+    print("in create bio", new_bio)
+    bio = db(db.barber_bio.id == new_bio.id).select().first()
+    print("in create bio", bio)
+    return response.json(dict(bio = bio)) # returns an id
 
 @auth.requires_signature()
 def bio_exists():
@@ -103,6 +103,32 @@ def bio_exists():
 def get_current_user():
     print "in api/get_current_user"
     return response.json(dict(user=auth.user if auth.user is not None else None))
+
+def get_all_bios():
+    barberbios = db(db.barber_bio).select()
+    barberbio_list = []
+    barbers = db().select(db.auth_user.ALL)
+    for b in barbers:
+        if b.Barber == True:
+            current_bio = db(db.barber_bio.barber_id == b.id).select().first()
+            # if it doesn't exists, differs from posts because sometimes a user will not have bio
+            if current_bio == None:
+                print("no current bio for: ", b.email)
+            else:
+                sendb = dict(
+                    id = current_bio.id,
+                    barber_id = current_bio.barber_id,
+                    barber_email = current_bio.barber_email,
+                    body = current_bio.body
+                )
+                print("current_bio.id: ", current_bio.id)
+                print("current_bio.barber_id: ", current_bio.barber_id)
+                print("current_bio.barber_email: ", current_bio.barber_email)
+                print("current_bio.body: ", current_bio.body)
+                barberbio_list.append(sendb)
+    return response.json(dict(biolist = barberbio_list))
+
+            #if it does exist
 
 def get_appointments():
     results = []

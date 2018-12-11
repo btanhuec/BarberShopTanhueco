@@ -12,18 +12,20 @@
     var saveCurrentBio = "{{=URL('api', 'save_edit_bio', user_signature=True)}}";
     var createBioUrl = "{{=URL('api', 'create_bio', user_signature=True)}}";
     var bioExistsUrl = "{{=URL('api', 'bio_exists', user_signature=True)}}";
+    var getAllBios = "{{=URL('api', 'get_all_bios')}}";
+
+    var getBioId = "{{=URL('api', 'get_bio_id')}}";
+
+
 
 
     var is_logged_in = "{{='false' if auth.user is None else 'true'}}";
-    var user_email = "{{='' if auth.user is None else auth.user.email}}";
+    var user_prof = "{{='' if auth.user is None else auth.user}}";
     var is_barber = "{{='' if auth.user not in db(db.auth_user.Barber == True).select() else 'False'}}";
-
-    var testing = "{{=URL('api', 'testing_api')}}";
 
 
     var redirectUrl = "{{=URL('api', 'refresh')}}";
 
-    var uploadPicUrl = "{{=URL('api', 'upload_pic')}}"
 </script>
 {{end}}
 
@@ -34,7 +36,7 @@
       <h1>Welcome to J&R Barber Shop</h1>
       <img src="{{=URL('static', '138.jpg')}}" style="width: 500px; height: 500px"/>
       <br>
-      <button v-on:click="redirect_barber_page();getBio(bioExists(get_current_user())); get_current_user();">Barbers</button>
+      <button v-on:click="redirect_barber_page();getBio(bioExists(get_current_user_barber())); get_current_user_barber();">Barbers</button>
       <button v-on:click="redirect_appointment_page()">Appointments</button>
     </div>
 
@@ -54,13 +56,17 @@
           </div>
           <div class = "barber_email">{{=b.email}}</div>
           {{current_bio = db(db.barber_bio.barber_id == b.id).select().first()}}
-
+          {{bioCreation = False}}
 
           <!-- Problems:
-          - Does not work with a person who has not made a bio
-          - possible solutions include, redirecting getbio to a function called createBio
-          - Does not work when user is NOT logged in (returns a bunch of errors on console,
-          mainly due to getBio() being called on every instance)
+          - show up when the users are the same
+
+          - after you run createBio(), don't worry about this since createBio() modifies conditional which
+          we can set
+
+
+
+          - on page load if a bio exists in the table
         -->
 
         <div>
@@ -68,24 +74,32 @@
           <div v-if="bio_created == false ">
           <button v-on:click="toggleNewBio()">Create Bio</button>
             <div v-if="bio_creating == true">
-            <input type = "text" v-model="newBioBody"/>
-            <button v-on:click="createBio()">Save Bio</button>
+              <input type = "text" v-model="newBioBody"/>
+              <button v-on:click="createBio();">Save Bio</button>
+            </div>
           </div>
-        </div>
-        {{elif auth.user_id == b.id :}}
-        <button v-on:click="editBio(getBio(bioExists(get_current_user())))">Edit Bio</button>
-        {{pass}}
+          {{pass}}
+
+          {{if type(current_bio).__name__ != "NoneType" and auth.user_id == b.id:}} <!-- if it already exists in the table -->
+                <button v-on:click="editBio(getBio(bioExists(get_current_user())))">Edit Bio</button>
+          {{elif auth.user_id == b.id:}}
+                <div v-if="bio_created == true ">
+                  <button v-on:click="editBio(getBio(bioExists(get_current_user())))">Edit Bio</button>
+                </div>
+          {{pass}}
+
+
 
 
         <div {{if b.id == auth.user_id:}}id="my_bio" v-if="bio_editing == false"{{pass}}>
           {{if not current_bio:}}
-          {{if auth.user_id == b.id:}} <!-- makes the bio field blank if the barber logged in has not created a bio -->
+            {{="No Bio"}}
+          {{else:}}
 
-          {{else:}}
-          {{="No Bio"}}
-          {{pass}}
-          {{else:}}
-          {{=current_bio.body}}
+            <!-- {{=current_bio.body}} -->
+            <div v-if="bio_exists == true">
+                ${c_bio.body}
+            </div>
           {{pass}}
         </div>
 
@@ -99,7 +113,6 @@
           </div>
         </div>
         {{pass}}
-              <!-- has to be a function which takes in as input the barber we are referencing -->
 
       </div>
     </div>
@@ -108,8 +121,8 @@
     {{pass}}
     {{pass}}
   </div>
-          <button v-on:click="redirect_home_page()">Home</button>
-          <button v-on:click="redirect_appointment_page()">Appointments</button>
+  <button v-on:click="redirect_home_page()">Home</button>
+  <button v-on:click="redirect_appointment_page()">Appointments</button>
 </div>
 </div>
 

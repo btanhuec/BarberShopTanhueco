@@ -1,5 +1,8 @@
 import datetime
 
+def get_user_email():
+    return None if auth.user is None else auth.user.email
+
 db.define_table('timeslots',
                 Field('timeslot'),
                 )
@@ -13,5 +16,6 @@ db.define_table('appointments',
 
 db.define_table('barber_bio',
                 Field('barber_id','reference auth_user'),
+                Field('barber_email', default=get_user_email()),
                 Field('body', 'text', default ='no bio'),
                 )

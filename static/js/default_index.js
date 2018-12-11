@@ -16,9 +16,21 @@ var processBarbers = function(){
 };
 
 var onPageLoad = function() {
-  get_current_user();
-  get_barbers();
-  bioExists(get_current_user());
+  // get_current_user();
+  // get_barbers();
+  // getBio(bioExists(get_current_user()));
+    $.getJSON(getAllBios,
+    function(response){
+      app.barberbio_list = response.biolist;
+      processBios();
+      get_barbers();
+      get_current_user();
+      get_current_user_barber();
+      bioExists();
+      bioExists();
+      getBio(bioExists(get_current_user_barber()));
+    }
+  );
 };
 
 var redirect_home_page = function() {
@@ -33,6 +45,10 @@ var redirect_barber_page = function(){
     app.appointment_page = false
 };
 
+var processBios = function(){
+  enumerate(app.barberbio_list);
+};
+
 
 var redirect_appointment_page = function() {
     app.home_page = false;
@@ -40,44 +56,64 @@ var redirect_appointment_page = function() {
     app.appointment_page = true
 };
 
-var editBio = function() {
+var editBio = function(callback) {
     app.bio_editing = true;
     callback;
-
     console.log('editBio');
 };
 
-var saveBio = function() {
-    app.bio_editing = false;
-    editedBio = app.c_bio;
-    /*edited_bio = bio of user we are editing, don't know if this is actually
-    needed, probably not*/
+var saveBio = function(callback) {
+    callback;
 
-    $.post(saveCurrentBio,{
-      body:editedBio.body,
-    }, function(response) {
-      $("#my_bio").text(response.body);
-    });
+    console.log('in saveBio():' + app.c_bio);
+    app.bio_editing = false;
+    if(app.c_bio==None){
+      editedBio = app.c_bio;
+    }else{
+      editedBio = app.c_bio;
+      console.log('c_bio is defined:'+ app.c_bio);
+    }
+ //c_bio for SURE has to be something prior
+    /*edited_bio = bio of user we are editing, don't know if this is actually
+    needed, probably not,
+    Normally, c_bio is a reference to the barber_bio object, but when a new
+    bio is being created, it's not referencing correctly.
+    */
+
     console.log('saveBio');
     console.log('saveBio:' + editedBio.barber_id);
     console.log('saveBio:' + editedBio.barber_email);
     console.log('saveBio:' + editedBio.body);
+    $.post(saveCurrentBio,{
+      body:editedBio.body,
+    }, function(response) {
+      $("#my_bio").text(response.body);
+      app.bio_created = true;
+    });
 };
 
 
-var getBio = function(){ //assigns the current, existing bio to getBio, needs to run after bioExists
+var getBio = function(callback){ //assigns the current, existing bio to getBio, needs to run after bioExists
+    callback;
     if(app.bio_exists == true){
       $.getJSON(getCurrentBio, function(response) {
         app.c_bio = response.bio;
-        console.log("getBio:" + response.bio.body);
+       app.bio_created = true;
+        console.log("getBio: "+ app.c_bio);
+        console.log("getBio: " + response.bio.body);
       });
     }else{
       console.log("getBio: False");
-    }
+    };
 };
 
 var toggleNewBio = function(){
+  console.log("in toggleNewBio:")
+
   app.bio_creating = true;
+  app.bio_editing = true;
+  console.log("in toggleNewBio creating: " + app.bio_creating)
+  console.log("in toggleNewBio editing: " + app.bio_creating)
 };
 
 
@@ -90,32 +126,51 @@ var createBio = function(){
     barber_id:app.selected_user.id,
     body: app.newBioBody,
   };
+  //error occurs when this post addition runs AFTER saveBio() runs lmfao what the yeet
   $.post(createBioUrl, newBio, function(response){
-
+    //newBio['id'] = response.new_bio; //recall the api.py function is going to return an id
+    //self.getBio(bioExists(get_current_user));
+    //self.saveBio();
+    newBio['idx'] = response.new_bio;
+    console.log("createBio: " + response.new_bio);
+    app.barberbio_list.push(newBio);
+    app.c_bio = response.bio;
+    console.log("createdBio c_bio: " + app.c_bio);
+    self.processBios();
+    //newBio returns the id for the post
+    //link c_bio to the newly added item
+    /*self.processBios();
+    self.bioExists();
+    self.getBio();
+    self.saveBio();*/
+    if(app.c_bio != undefined){
+      saveBio();
+    }
   });
   /*createBio pushes it into the database, but does not upload properly due to the way
   the html file is set, to fix this, we need to run the same functions we run when editing a bio,
   but somehow save c_bio to the newly created bio (possibly using getBio), and run saveBio
   */
   /* c_bio can literally be anything, right now, cBio has a */
-  app.c_bio = newBio;
-  console.log("in createBio():" +app.c_bio.body);
-  app.bio_created = true;
-  bioExists();
-  saveBio();
+
 };
 
-var bioExists = function(callback){//determine if a bio exists for the current user
+var bioExists = function(callback){//determine if a bio exists for the current user, not working properly
   callback;
   console.log("in bioExists");
   if (app.selected_user == null){
-    console.log("bioExists(): selected_user_email"); // not an issue, works fine when there is user logged in
+    console.log("bioExists(): " + self.selected_user); // not an issue, works fine when there is user logged in
   }else{
     $.getJSON(bioExistsUrl, function(response){
       app.bio_exists = response.results;
     }); //somehow returning false, but when button is pressed a second time, returns true? maybe i could just reverse the logic lmfao
     console.log("leaving bioExists: " + app.bio_exists);
   }
+};
+
+var valBioCreated = function(){
+  console.log("in valBioCreated()");
+  app.bio_created = true;
 };
 
 var display_appt_table = function() {
@@ -145,6 +200,20 @@ var test_print = function() {
     $.post(getAppointmentsUrl, {}, function (response) {
         console.log('testing 2');
     });
+};
+
+var get_current_user_barber = function(){
+  console.log("in get_current_user_barber");
+  //   $.getJSON(getCurrentUserUrl, function(response) {
+  //       app.selected_user = response.user;
+  //   });
+  // if(app.selected_user==null){
+  //   console.log("leaving get_current_user():null");
+  // }else{
+  //   console.log("leaving get_current_user():" + app.selected_user.email);
+  // }
+    app.selected_user = user_prof;
+    console.log(app.selected_user)
 };
 
 var get_current_user = function(){
@@ -250,10 +319,6 @@ var redirect_refresh = function () {
 
 };
 
-var print_shit = function() {
-    console.log(app.second_barber);
-};
-
 var app = new Vue({
     el: '#app',
     delimiters: ['${', '}'],
@@ -275,6 +340,7 @@ var app = new Vue({
         bio_editing: false,
         bio_exists: false,
         bio_creating: false,
+        barberbio_list: [],
         display_barber_chooser: false,
         display_date_chooser: false,
         display_time_chooser: false,
@@ -282,6 +348,7 @@ var app = new Vue({
         appt_success: false,
         barber_picture: undefined,
         bio_created: false,
+        createdBio: undefined
     },
     methods: {
         redirect_home_page: self.redirect_home_page,
@@ -313,10 +380,11 @@ var app = new Vue({
         file_changed: self.file_changed,
         upload_pic: self.upload_pic,
         display_date_chooser: self.display_date_chooser,
-        print_shit: self.print_shit
+        valBioCreated: self.valBioCreated,
+        get_current_user_barber: self.get_current_user_barber
     }
 });
 
 
-onPageLoad();
+app.onPageLoad();
 //get_appointments();
