@@ -77,21 +77,29 @@
         <div>
           {{if type(current_bio).__name__ == "NoneType" and auth.user_id == b.id:}}
           <div v-if="bio_created == false ">
+            <div class = "center">
             <button v-on:click="toggleNewBio()">Create Bio</button>
+            </div>
             <div v-if="bio_creating == true">
-              <input type = "text" v-model="newBioBody"/>
+              <div class = "center">
+                <textarea v-model="newBioBody" style = "width: 50%">
+                </textarea>
+                <br>
               <button v-on:click="createBio();">Save Bio</button>
+              </div>
             </div>
           </div>
           {{pass}}
 
           {{if type(current_bio).__name__ != "NoneType" and auth.user_id == b.id:}} <!-- if it already exists in the table -->
           <div class = "center">
-          <button v-on:click="editBio(getBio(bioExists(get_current_user())))">Edit Bio</button>
+            <button v-on:click="editBio(getBio(bioExists(get_current_user())))">Edit Bio</button>
           </div>
           {{elif auth.user_id == b.id:}}
-          <div class = "center" v-if="bio_created == true ">
-            <button v-on:click="editBio(getBio(bioExists(get_current_user())))">Edit Bio</button>
+          <div v-if="bio_created == true ">
+            <div class = "center">
+              <button v-on:click="editBio(getBio(bioExists(get_current_user())))">Edit Bio</button>
+            </div>
           </div>
           {{pass}}
 
@@ -139,8 +147,8 @@
   {{pass}}
   {{if auth.user_id != None:}}
   <h1>Make an Appointment</h1>
+  <div v-if="appt_success==false" class = "center" style = "width:50%">
   <h2>Select a barber</h2>
-  <div class = "center" style = "width:50%">
   <select v-model="selected_barber">
     <option disabled value="">Select a barber</option>
     {{barbers = db().select(db.auth_user.ALL)}}
@@ -153,13 +161,13 @@
   </select>
   </div>
 
-  <div v-if="display_date_chooser == true">
+  <div v-if="display_date_chooser == true && appt_success==false" class = "center" style = "width:50%">
     <h2>Choose an appointment date</h2>
 
     <input type="date" v-model="selected_date" v-on:change="get_appointments(); show_time_chooser()">
   </div>
 
-  <div v-if="display_time_chooser == true">
+  <div v-if="display_time_chooser == true && appt_success==false" class = "center" style = "width:50%">
     <h2>Select a time</h2>
     <select v-model="selected_time">
       <option disabled value="">Select a time</option>
@@ -174,20 +182,35 @@
   <p v-for="time in valid_times">${time}</p>
 -->
 
-<div v-if="display_create_appt_btn == true">
-  <button v-on:click="make_appointment(); appoint_success()">Create Appointment</button>
+<div v-if="display_create_appt_btn == true && appt_success==false">
+  <div class = "center">
+  <button v-on:click="make_appointment(); appoint_success();">Create Appointment</button>
+  </div>
+</div>
+
+<div v-if="appt_success == true && apptreturn == true">
+
+</div>
+
+<div v-if="appt_success == true && apptreturn == false">
+
+
 </div>
 
 <div v-if="appt_success == true">
+  <div class = "center">
   <h2>Create a new appointment?</h2>
   <button v-on:click="redirect_refresh()">New appointment</button>
+  </div>
 </div>
 
 <div v-for="each in barbers_list" v-if="each.email == selected_user.email">
+  <div class = "center">
   <button v-on:click="display_appt_table()">Show Today's Appointments</button>
+  </div>
 </div>
 
-<div v-if="show_appt_table == true">
+<div class = "center" style = "width:50%" v-if="show_appt_table == true">
 
   <h2>My Appointments for Today</h2>
   <div v-for="each in barbers_list" v-if="each.email == selected_user.email">
