@@ -23,7 +23,6 @@
   var user_prof = "{{='' if auth.user is None else auth.user}}";
   var is_barber = "{{='' if auth.user not in db(db.auth_user.Barber == True).select() else 'False'}}";
 
-
   var redirectUrl = "{{=URL('api', 'refresh')}}";
 
 </script>
@@ -188,12 +187,15 @@
   </div>
 </div>
 
-<div v-if="appt_success == true && apptreturn == true">
-
+<div v-if="appt_success == true && apptreturn == 1">
+  <div class = "center">
+  <h2>Thank you for choosing J&R Barbershop</h2>
+  <h4>You will be receiving an email shortly confirming your appointment with</h4>
+  <button v-on:click="redirect_refresh()">New appointment</button>
+  </div>
 </div>
 
-<div v-if="appt_success == true && apptreturn == false">
-
+<div v-if="appt_success == true && apptreturn == 0">
 
 </div>
 

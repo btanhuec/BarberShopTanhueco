@@ -211,6 +211,7 @@ var get_current_user = function(){
 var make_appointment = function() {
     $.post(makeAppointmentUrl, {barber_id: app.selected_barber, appointment_date: app.selected_date, timeslot_id: app.selected_time, user_id: app.selected_user.id}, function (response) {
         console.log(response);
+        app.apptreturn = response.vreturn;
         console.log('made appointment')
     });
 };
@@ -325,7 +326,8 @@ var app = new Vue({
         appt_success: false,
         barber_picture: undefined,
         bio_created: false,
-        createdBio: undefined
+        createdBio: undefined,
+        apptreturn: undefined
     },
     methods: {
         redirect_home_page: self.redirect_home_page,

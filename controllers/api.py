@@ -25,23 +25,28 @@ def make_appointment_api():
     mail.settings.sender = 'CMPS183BarberShop@gmail.com'
     mail.settings.login = 'CMPS183BarberShop@gmail.com:cmps183!'
 
+    vreturn = None
     if mail.send(to=[barber.email],
                  subject='New Appointment',
                  message='You have an appointment on:'
                          '{}, at {} for {} {}'.format(request.vars.appointment_date, time.timeslot, customer.first_name, customer.last_name)):
         print "barber mail sent"
+        vreturn = 1
     else:
         print 'barber mail not sent'
+        vreturn = 0
 
     if mail.send(to=[customer.email],
                  subject='New Appointment',
                  message='Hello,\n'
                          'You have a haircut appointment with {} {} on {} at {}.'.format(barber.first_name, barber.last_name, request.vars.appointment_date, time.timeslot)):
-        print "cust mail sent"
+        print "customer mail sent"
+        vreturn = 1
     else:
-        print 'cust mail not sent'
+        print "customer mail not sent"
+        vreturn = 0
+    return response.json(dict(vreturn=vreturn))
 
-    return "from api/make_appointment_api()"
 
 def upload_pic():
     thing = db.barber_pics.update_or_insert(
