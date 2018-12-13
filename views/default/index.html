@@ -209,17 +209,18 @@
   </div>
 </div>
 
-<div class = "center" style = "width:50%" v-if="show_appt_table == true">
+<div class = "centered" style = "width:50%" v-if="show_appt_table == true">
 
   <h2>My Appointments for Today</h2>
   <div class = "row" v-for="time in reqAppointments[0]">
     ${time.timeslot}
+  </div>
+
+  <div class = "half" v-for="customer in reqAppointments[1]">
     ${customer.first_name}
     ${customer.last_name}
   </div>
-  <div class = "half" v-for="customer in reqAppointments[1]">
 
-  </div>
   <!-- <div v-for="each in barbers_list" v-if="each.email == selected_user.email">
     <!--
     <div class="table-title">
