@@ -3,6 +3,41 @@ def get_barbers():
     barbers = db(db.auth_user.Barber == True).select()
     return response.json(dict(barbers=barbers))
 
+#pass my_date in
+@auth.requires_signature()
+def get_day_appointments():
+        print('yaga')
+        times = []
+        customers = []
+        #pass rawdate
+        someval = request.vars.selected_date_barber
+        appointments = db((db.auth_user.id == db.appointments.user_id) & (auth.user_id == db.appointments.barber_id)).select()
+        print appointments
+        print someval
+        for appt in appointments:
+            print('hey!')
+            my_date = someval
+            print ('date input' + my_date)
+            customer = db(db.auth_user.id == appt.auth_user.id).select().first()
+            time = db(db.timeslots.id == appt.appointments.timeslot_id).select().first()
+            appoint_date = appt.appointments.appointment_date
+
+            appoint_date_string = appoint_date.strftime('%Y-%m-%d')
+            print appoint_date_string
+            print(type(appoint_date_string))
+            if my_date == appoint_date_string:
+                times.append(time)
+                customers.append(customer)
+        results = [times,customers]
+        print("0:")
+        print(results[0])
+        print("0:")
+        print(results[1])
+        print("0:")
+        return response.json(dict(results=results))
+
+
+
 @auth.requires_signature()
 def make_appointment_api():
 

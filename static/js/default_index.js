@@ -212,7 +212,8 @@ var make_appointment = function() {
     $.post(makeAppointmentUrl, {barber_id: app.selected_barber, appointment_date: app.selected_date, timeslot_id: app.selected_time, user_id: app.selected_user.id}, function (response) {
         console.log(response);
         app.apptreturn = response.vreturn;
-        console.log('made appointment')
+        console.log('made appointment');
+        app.actualsuccess = true;
     });
 };
 
@@ -297,12 +298,26 @@ var redirect_refresh = function () {
 
 };
 
+var getDayAppointments = function(){
+  console.log(app.selected_date_barber);
+  $.post(getBarberAppointments, {selected_date_barber: app.selected_date_barber},
+    function(response){
+      console.log("getDayAppointments success");
+      console.log(response.results);
+      app.reqAppointments = response.results;
+      console.log("0" + app.reqAppointments[0]);
+      console.log("1" + app.reqAppointments[1]);
+
+  });
+};
+
 var app = new Vue({
     el: '#app',
     delimiters: ['${', '}'],
     unsafeDelimiters: ['!{', '}'],
     data: {
         haircuts: [],
+        reqAppointments:[],
         home_page: true,
         barber_page: false,
         appointment_page: false,
@@ -327,7 +342,9 @@ var app = new Vue({
         barber_picture: undefined,
         bio_created: false,
         createdBio: undefined,
-        apptreturn: undefined
+        apptreturn: undefined,
+        actualsuccess: undefined,
+        selected_date_barber: undefined
     },
     methods: {
         redirect_home_page: self.redirect_home_page,
@@ -360,7 +377,8 @@ var app = new Vue({
         upload_pic: self.upload_pic,
         display_date_chooser: self.display_date_chooser,
         valBioCreated: self.valBioCreated,
-        get_current_user_barber: self.get_current_user_barber
+        get_current_user_barber: self.get_current_user_barber,
+        getDayAppointments: self.getDayAppointments
     }
 });
 

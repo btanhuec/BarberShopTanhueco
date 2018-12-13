@@ -13,7 +13,7 @@
   var createBioUrl = "{{=URL('api', 'create_bio', user_signature=True)}}";
   var bioExistsUrl = "{{=URL('api', 'bio_exists', user_signature=True)}}";
   var getAllBios = "{{=URL('api', 'get_all_bios')}}";
-
+  var getBarberAppointments = "{{=URL('api', 'get_day_appointments', user_signature=True)}}";
   var getBioId = "{{=URL('api', 'get_bio_id')}}";
 
 
@@ -77,14 +77,14 @@
           {{if type(current_bio).__name__ == "NoneType" and auth.user_id == b.id:}}
           <div v-if="bio_created == false ">
             <div class = "center">
-            <button v-on:click="toggleNewBio()">Create Bio</button>
+              <button v-on:click="toggleNewBio()">Create Bio</button>
             </div>
             <div v-if="bio_creating == true">
               <div class = "center">
                 <textarea v-model="newBioBody" style = "width: 50%">
                 </textarea>
                 <br>
-              <button v-on:click="createBio();">Save Bio</button>
+                <button v-on:click="createBio();">Save Bio</button>
               </div>
             </div>
           </div>
@@ -109,9 +109,9 @@
             {{if not current_bio:}}
             {{="No Bio"}}
             {{else:}}
-              {{=current_bio.body}}
-              <!-- if you hit the home page, i want current_bio.body to refresh, but it won't -->
-              <!-- cheap but, permanent flag after hitting another page + current user returns js bio-->
+            {{=current_bio.body}}
+            <!-- if you hit the home page, i want current_bio.body to refresh, but it won't -->
+            <!-- cheap but, permanent flag after hitting another page + current user returns js bio-->
             {{pass}}
           </div>
 
@@ -147,17 +147,17 @@
   {{if auth.user_id != None:}}
   <h1>Make an Appointment</h1>
   <div v-if="appt_success==false" class = "center" style = "width:50%">
-  <h2>Select a barber</h2>
-  <select v-model="selected_barber">
-    <option disabled value="">Select a barber</option>
-    {{barbers = db().select(db.auth_user.ALL)}}
-    {{for b in barbers:}}
-    {{if b.Barber == True:}}
-    <option v-on:click="show_date_chooser()"
-    value="{{=b.id}}">{{=b.first_name + " " + b.last_name}}</option>
-    {{pass}}
-    {{pass}}
-  </select>
+    <h2>Select a barber</h2>
+    <select v-model="selected_barber">
+      <option disabled value="">Select a barber</option>
+      {{barbers = db().select(db.auth_user.ALL)}}
+      {{for b in barbers:}}
+      {{if b.Barber == True:}}
+      <option v-on:click="show_date_chooser()"
+      value="{{=b.id}}">{{=b.first_name + " " + b.last_name}}</option>
+      {{pass}}
+      {{pass}}
+    </select>
   </div>
 
   <div v-if="display_date_chooser == true && appt_success==false" class = "center" style = "width:50%">
@@ -183,81 +183,84 @@
 
 <div v-if="display_create_appt_btn == true && appt_success==false">
   <div class = "center">
-  <button v-on:click="make_appointment(); appoint_success();">Create Appointment</button>
+    <button v-on:click="make_appointment(); appoint_success();">Create Appointment</button>
   </div>
 </div>
 
-<div v-if="appt_success == true && apptreturn == 1">
+<div v-if="appt_success == true && apptreturn == 1 && actualsuccess == true">
   <div class = "center">
-  <h2>Thank you for choosing J&R Barbershop</h2>
-  <h4>You will be receiving an email shortly confirming your appointment with</h4>
-  <button v-on:click="redirect_refresh()">New appointment</button>
+    <h2>Thank you for choosing J&R Barbershop</h2>
+    <h4>You will be receiving an email shortly confirming your appointment with</h4>
+    <h3>${selected_barber.first_name + " " + selected_barber.last_name}</h3>
+    <button v-on:click="redirect_refresh()">New appointment</button>
   </div>
 </div>
 
-<div v-if="appt_success == true && apptreturn == 0">
-
-</div>
-
-<div v-if="appt_success == true">
+<div v-if="appt_success == true && actualsuccess != true">
   <div class = "center">
-  <h2>Create a new appointment?</h2>
-  <button v-on:click="redirect_refresh()">New appointment</button>
+    <h2>LOADING</h2>
+    <h4>Please wait one moment while we get things ready..</h4>
   </div>
 </div>
 
 <div v-for="each in barbers_list" v-if="each.email == selected_user.email">
   <div class = "center">
-  <button v-on:click="display_appt_table()">Show Today's Appointments</button>
+    <button v-on:click="display_appt_table()">Show Today's Appointments</button>
   </div>
 </div>
 
 <div class = "center" style = "width:50%" v-if="show_appt_table == true">
 
   <h2>My Appointments for Today</h2>
-  <div v-for="each in barbers_list" v-if="each.email == selected_user.email">
+  <div class = "row" v-for="time in reqAppointments[0]">
+    ${time.timeslot}
+    ${customer.first_name}
+    ${customer.last_name}
+  </div>
+  <div class = "half" v-for="customer in reqAppointments[1]">
 
+  </div>
+  <!-- <div v-for="each in barbers_list" v-if="each.email == selected_user.email">
     <!--
     <div class="table-title">
     <h3>Appointments</h3>
   </div>
 -->
-<table class="table-fill">
-  <thead>
+<!--<table class="table-fill">-->
+  <!--<thead>
     <tr>
       <th class="text-left">Time</th>
       <th class="text-left">Customer</th>{{if auth.user_id == None:}}
       {{redirect(URL('default', 'user/register'))}}
       {{pass}}
     </tr>
-  </thead>
+  </thead>-->
 
-  <tbody class="table-hover">
-    {{appointments = db((db.auth_user.id == db.appointments.user_id) & (auth.user_id == db.appointments.barber_id)).select()}}
+  <!--<tbody class="table-hover">
+  {{appointments = db((db.auth_user.id == db.appointments.user_id) & (auth.user_id == db.appointments.barber_id)).select()}}
 
-    {{print type(appointments)}}
+  {{print type(appointments)}}
 
-    {{for appt in appointments:}}
-    {{my_date = datetime.datetime.now().strftime('%Y-%m-%d 00:00:00')}}
-    {{customer = db(db.auth_user.id == appt.auth_user.id).select().first()}}
-    {{time = db(db.timeslots.id == appt.appointments.timeslot_id).select().first()}}
-    {{appoint_date = appt.appointments.appointment_date}}
-    {{appoint_date_string = appoint_date.strftime('%Y-%m-%d 00:00:00')}}
-    {{print my_date == appoint_date_string}}
+  {{for appt in appointments:}}
+  {{my_date = datetime.datetime.now().strftime('%Y-%m-%d 00:00:00')}}
+  {{customer = db(db.auth_user.id == appt.auth_user.id).select().first()}}
+  {{time = db(db.timeslots.id == appt.appointments.timeslot_id).select().first()}}
+  {{appoint_date = appt.appointments.appointment_date}}
+  {{appoint_date_string = appoint_date.strftime('%Y-%m-%d 00:00:00')}}
+  {{print my_date == appoint_date_string}}
 
-    <div>
-      {{if my_date == appoint_date_string:}}
-      <tr>
-        <td class="text-left">{{=time.timeslot}}</td>
-        <td class="text-left">{{=customer.first_name + " " + customer.last_name}}</td>
-      </tr>
-      {{pass}}
-    </div>
-    {{pass}}
-
-  </tbody>
-</table>
+  <div>
+  {{if my_date == appoint_date_string:}}
+  <tr>
+  <td class="text-left">{{=time.timeslot}}</td>
+  <td class="text-left">{{=customer.first_name + " " + customer.last_name}}</td>
+</tr>
+{{pass}}
 </div>
+{{pass}}
+
+</tbody>-->
+<input type="date" v-model="selected_date_barber" v-on:change="getDayAppointments();">
 
 
 </div>
